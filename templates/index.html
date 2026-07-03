@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Character Encoding -->
+    <meta charset="UTF-8">
+
+    <!-- Mobile Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <meta name="description" content="Predict your salary instantly with AI. Our Machine Learning model trained on 50K+ real-world salary records delivers 96% accurate predictions in under 100ms.">
+    <meta name="keywords" content="salary prediction, AI salary, machine learning, salary calculator, career insights">
+
+    <!-- Website Title -->
+    <title>AI Salary Intelligence Platform — Predict Your Salary with AI</title>
+
+    <!-- Google Fonts: Inter + Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar" id="navbar">
+
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#stats">Statistics</a></li>
+            <li><a href="#workflow">How It Works</a></li>
+            <li><a href="/predict" class="nav-cta">Predict Salary →</a></li>
+        </ul>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#stats">Statistics</a></li>
+            <li><a href="#workflow">How It Works</a></li>
+            <li><a href="/predict">🚀 Predict Salary</a></li>
+        </ul>
+    </div>
+
+
+    <!-- ================= HERO SECTION ================= -->
+
+    <section class="hero" id="hero">
+
+        <!-- Step 1: Full-screen Canvas World Map Background -->
+        <canvas id="world-map-canvas"></canvas>
+
+        <!-- Step 2: Hero Content -->
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <div class="badge-dot"></div>
+                AI-Powered Salary Intelligence
+            </div>
+
+            <h1>
+                Predict Your Salary<br>
+                Using <span class="gradient-text">Artificial Intelligence</span>
+            </h1>
+
+            <p>
+                Get instant salary predictions powered by our Machine Learning model
+                trained on 50,000+ real-world salary records from top companies worldwide.
+            </p>
+
+            <div class="hero-cta">
+                <a href="/predict" class="btn" id="hero-main-cta">
+                    🚀 Get Started Free
+                </a>
+                <a href="#features" class="btn btn-ghost">
+                    Learn More ↓
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Step 4: Glassmorphism Hero Stat Cards -->
+        <div class="hero-stats">
+
+            <div class="hero-stat-card reveal">
+                <span class="stat-icon">🎯</span>
+                <span class="stat-num">96%</span>
+                <span class="stat-label">Accuracy</span>
+            </div>
+
+            <div class="hero-stat-card reveal reveal-delay-1">
+                <span class="stat-icon">📊</span>
+                <span class="stat-num">50K+</span>
+                <span class="stat-label">Records</span>
+            </div>
+
+            <div class="hero-stat-card reveal reveal-delay-2">
+                <span class="stat-icon">⚡</span>
+                <span class="stat-num">&lt;100ms</span>
+                <span class="stat-label">Speed</span>
+            </div>
+
+            <div class="hero-stat-card reveal reveal-delay-3">
+                <span class="stat-icon">🤖</span>
+                <span class="stat-num">ML</span>
+                <span class="stat-label">Powered</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= STATISTICS SECTION ================= -->
+
+    <section class="stats" id="stats">
+
+        <div class="card reveal">
+            <span class="card-icon">🎯</span>
+            <h2>96%</h2>
+            <p>Prediction Accuracy</p>
+        </div>
+
+        <div class="card reveal reveal-delay-1">
+            <span class="card-icon">📈</span>
+            <h2>50K+</h2>
+            <p>Salary Records</p>
+        </div>
+
+        <div class="card reveal reveal-delay-2">
+            <span class="card-icon">⚡</span>
+            <h2>&lt;100ms</h2>
+            <p>Prediction Speed</p>
+        </div>
+
+        <div class="card reveal reveal-delay-3">
+            <span class="card-icon">🌍</span>
+            <h2>24/7</h2>
+            <p>Always Available</p>
+        </div>
+
+    </section>
+
+
+    <!-- ================= FEATURES SECTION ================= -->
+
+    <section class="features" id="features">
+
+        <div class="features-header">
+            <div class="section-label">Why Choose Us</div>
+            <h2 class="section-title">Why Choose <span class="gradient-text">AI Salary?</span></h2>
+            <p class="section-subtitle">
+                Enterprise-grade machine learning designed for individuals and teams
+                who need accurate, real-time salary intelligence.
+            </p>
+        </div>
+
+        <div class="feature-container">
+
+            <div class="feature-card reveal">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Powered</h3>
+                <p>
+                    Machine Learning model trained on thousands of real-world salary records
+                    using Ridge Regression with advanced preprocessing pipelines for superior accuracy.
+                </p>
+            </div>
+
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>
+                    Get your salary prediction in under 100 milliseconds.
+                    Our optimized inference pipeline delivers instant insights
+                    without any delays.
+                </p>
+            </div>
+
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon">🎯</div>
+                <h3>High Accuracy</h3>
+                <p>
+                    Advanced feature engineering and intelligent preprocessing pipeline
+                    delivers 96% prediction accuracy across diverse job roles,
+                    industries, and locations.
+                </p>
+            </div>
+
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure & Private</h3>
+                <p>
+                    Your professional information remains completely private.
+                    Data is processed in real-time and never stored permanently
+                    on our servers.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= AI WORKFLOW SECTION (Step 13) ================= -->
+
+    <section class="workflow" id="workflow">
+
+        <div class="workflow-header">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">AI Prediction <span class="gradient-text">Workflow</span></h2>
+            <p class="section-subtitle">
+                From raw input to salary prediction — six intelligent steps powered by machine learning.
+            </p>
+        </div>
+
+        <div class="workflow-steps">
+
+            <div class="workflow-step reveal">
+                <div class="step-circle">📝</div>
+                <div class="step-connector"></div>
+                <div class="step-label">User<br>Input</div>
+            </div>
+
+            <div class="workflow-step reveal reveal-delay-1">
+                <div class="step-circle">🔬</div>
+                <div class="step-connector"></div>
+                <div class="step-label">Data<br>Preprocessing</div>
+            </div>
+
+            <div class="workflow-step reveal reveal-delay-2">
+                <div class="step-circle">⚙️</div>
+                <div class="step-connector"></div>
+                <div class="step-label">Feature<br>Engineering</div>
+            </div>
+
+            <div class="workflow-step reveal reveal-delay-3">
+                <div class="step-circle">🤖</div>
+                <div class="step-connector"></div>
+                <div class="step-label">ML<br>Model</div>
+            </div>
+
+            <div class="workflow-step reveal reveal-delay-4">
+                <div class="step-circle">📊</div>
+                <div class="step-connector"></div>
+                <div class="step-label">Salary<br>Prediction</div>
+            </div>
+
+            <div class="workflow-step reveal reveal-delay-4">
+                <div class="step-circle">📋</div>
+                <div class="step-label">Final<br>Report</div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+        <p>© 2024 AI Salary Intelligence Platform · Built with Machine Learning</p>
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/predict">Predict</a>
+            <a href="#features">Features</a>
+            <a href="#workflow">How It Works</a>
+        </div>
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>

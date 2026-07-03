@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Something went wrong. Return to the AI Salary Intelligence Platform.">
+    <title>Error — AI Salary Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </div>
+
+    <!-- Error Page -->
+    <section class="error-page-section">
+        <div class="error-page-container">
+
+            <!-- Icon -->
+            <div class="error-icon-wrapper">
+                {% if error_type == 'invalid_input' %}
+                    <div class="error-icon">⚠️</div>
+                {% elif error_type == 'prediction_failed' %}
+                    <div class="error-icon">🤖</div>
+                {% elif error_type == 'model_unavailable' %}
+                    <div class="error-icon">🔧</div>
+                {% elif error_type == 'not_found' %}
+                    <div class="error-icon">🔍</div>
+                {% else %}
+                    <div class="error-icon">❌</div>
+                {% endif %}
+            </div>
+
+            <!-- Error Type Badge -->
+            <div class="error-type-badge">
+                {% if error_type == 'invalid_input' %}
+                    VALIDATION ERROR
+                {% elif error_type == 'prediction_failed' %}
+                    PREDICTION ERROR
+                {% elif error_type == 'model_unavailable' %}
+                    MODEL UNAVAILABLE
+                {% elif error_type == 'not_found' %}
+                    NOT FOUND
+                {% else %}
+                    SYSTEM ERROR
+                {% endif %}
+            </div>
+
+            <!-- Error Title -->
+            <h1 class="error-title">{{ error_title }}</h1>
+
+            <!-- Error Message -->
+            <p class="error-message">{{ error_message }}</p>
+
+            <!-- Error Details List (for validation errors) -->
+            {% if error_details %}
+            <div class="error-details-box">
+                <ul class="error-details-list">
+                    {% for detail in error_details %}
+                    <li>{{ detail }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Helpful Tips -->
+            <div class="error-tips-card">
+                {% if error_type == 'invalid_input' %}
+                <div class="error-tip">
+                    <span class="tip-icon">💡</span>
+                    <span>Make sure all required fields are filled in with valid values before submitting.</span>
+                </div>
+                {% elif error_type == 'prediction_failed' %}
+                <div class="error-tip">
+                    <span class="tip-icon">🔄</span>
+                    <span>This may be a temporary issue. Try submitting your prediction again.</span>
+                </div>
+                <div class="error-tip">
+                    <span class="tip-icon">🔧</span>
+                    <span>If the error persists, ensure all model artifacts are present in the <code>artifacts/</code> directory.</span>
+                </div>
+                {% elif error_type == 'not_found' %}
+                <div class="error-tip">
+                    <span class="tip-icon">📚</span>
+                    <span>The report may have been deleted. Check your prediction history for available reports.</span>
+                </div>
+                {% else %}
+                <div class="error-tip">
+                    <span class="tip-icon">🔄</span>
+                    <span>Please try again. If the problem continues, contact the administrator.</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="error-cta-group">
+                {% if error_type == 'invalid_input' or error_type == 'prediction_failed' %}
+                <a href="/predict" class="btn btn-glowing">🚀 Try Again</a>
+                {% elif error_type == 'not_found' %}
+                <a href="/history" class="btn btn-glowing">📚 View History</a>
+                {% endif %}
+                <a href="/" class="btn btn-ghost">🏠 Back to Home</a>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

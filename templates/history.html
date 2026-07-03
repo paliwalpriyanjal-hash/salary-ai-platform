@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track, analyze and manage all your past AI salary predictions.">
+    <title>Prediction History — AI Salary Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history" class="active">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </div>
+
+    <!-- ===========================
+            History Dashboard
+    ============================ -->
+    <div class="history-container fade-in">
+
+        <!-- Header -->
+        <div class="history-header">
+            <div>
+                <div class="section-label">Records & Analytics</div>
+                <h1 class="page-title">Prediction <span class="gradient-text">History</span></h1>
+                <p class="page-subtitle">Track, analyze, and manage all your past AI salary predictions in one place.</p>
+            </div>
+            <a href="/predict" class="btn btn-glowing" style="align-self:flex-start;">
+                + New Prediction
+            </a>
+        </div>
+
+        <!-- Stats Banner -->
+        <div class="history-stats-banner" id="historyStatsBanner">
+            <div class="hist-stat-card">
+                <span class="hist-stat-icon">📊</span>
+                <div>
+                    <div class="hist-stat-value" id="statTotal">—</div>
+                    <div class="hist-stat-label">Total Predictions</div>
+                </div>
+            </div>
+            <div class="hist-stat-card">
+                <span class="hist-stat-icon">💰</span>
+                <div>
+                    <div class="hist-stat-value" id="statHighest">—</div>
+                    <div class="hist-stat-label">Highest Salary</div>
+                </div>
+            </div>
+            <div class="hist-stat-card">
+                <span class="hist-stat-icon">📈</span>
+                <div>
+                    <div class="hist-stat-value" id="statAverage">—</div>
+                    <div class="hist-stat-label">Average Salary</div>
+                </div>
+            </div>
+            <div class="hist-stat-card">
+                <span class="hist-stat-icon">🎯</span>
+                <div>
+                    <div class="hist-stat-value" id="statConfidence">—</div>
+                    <div class="hist-stat-label">Avg. Confidence</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="history-controls">
+            <div class="hist-search-wrapper">
+                <span class="hist-search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="histSearchInput"
+                    class="hist-search-input"
+                    placeholder="Search by Job Title, Report ID, Model..."
+                    autocomplete="off"
+                >
+            </div>
+            <div class="hist-filters">
+                <select id="histDateFilter" class="hist-filter-select">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
+                </select>
+                <select id="histSortSelect" class="hist-filter-select">
+                    <option value="date_desc">Date ↓ (Newest)</option>
+                    <option value="date_asc">Date ↑ (Oldest)</option>
+                    <option value="salary_desc">Salary ↓ (Highest)</option>
+                    <option value="salary_asc">Salary ↑ (Lowest)</option>
+                    <option value="confidence_desc">Confidence ↓</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table Wrapper -->
+        <div class="history-table-wrapper" id="historyTableWrapper">
+            <table class="hist-table" id="histTable">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Report ID</th>
+                        <th>Job Title</th>
+                        <th>Predicted Salary</th>
+                        <th>Confidence</th>
+                        <th>Model</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="histTableBody">
+                    {% for item in history %}
+                    <tr class="hist-row"
+                        data-timestamp="{{ item.timestamp }}"
+                        data-salary="{{ item.prediction }}"
+                        data-confidence="{{ item.confidence }}"
+                        data-job="{{ item.input_features_dict.job_title | default('') }}"
+                        data-model="{{ item.model_name | default('') }}"
+                        data-report-id="{{ item.report_id }}"
+                        data-search="{{ item.report_id }} {{ item.input_features_dict.job_title | default('') }} {{ item.model_name | default('') }}">
+
+                        <td class="hist-td-date">
+                            <span class="hist-date">{{ item.timestamp[:10] }}</span>
+                            <span class="hist-time">{{ item.timestamp[11:16] if item.timestamp | length > 10 else '' }}</span>
+                        </td>
+                        <td><span class="report-id-badge">{{ item.report_id }}</span></td>
+                        <td class="hist-td-job">{{ item.input_features_dict.job_title | default('—') }}</td>
+                        <td class="hist-td-salary">₹ {{ '{:,.0f}'.format(item.prediction) }}</td>
+                        <td>
+                            <div class="conf-badge {% if item.confidence >= 90 %}high{% elif item.confidence >= 75 %}med{% else %}low{% endif %}">
+                                {{ item.confidence }}%
+                            </div>
+                        </td>
+                        <td class="hist-td-model">{{ item.model_name | default('Ridge') }}</td>
+                        <td class="hist-td-actions">
+                            <a href="/history/view/{{ item.report_id }}" class="hist-action-btn view" title="View Full Report">
+                                👁️ View
+                            </a>
+                            <a href="/history/view/{{ item.report_id }}?download=true" class="hist-action-btn pdf" title="Download Report PDF">
+                                📄 PDF
+                            </a>
+                            <button
+                                class="hist-action-btn delete"
+                                title="Delete Record"
+                                onclick="openDeleteModal('{{ item.report_id }}')">
+                                🗑️ Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <!-- No rows — handled by JS empty state -->
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div class="hist-empty-state" id="histEmptyState" style="display:none;">
+                <div class="hist-empty-icon">🔭</div>
+                <h3>No predictions found</h3>
+                <p id="histEmptyMsg">You haven't made any predictions yet. Start by predicting your salary!</p>
+                <a href="/predict" class="btn btn-glowing" style="margin-top:1.5rem;">🚀 Make First Prediction</a>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="hist-pagination" id="histPagination"></div>
+
+    </div>
+
+    <!-- ===========================
+            Delete Confirmation Modal
+    ============================ -->
+    <div id="deleteModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content" style="max-width:440px;">
+            <div class="modal-header">
+                <h2 style="margin:0;font-size:20px;">🗑️ Delete Prediction</h2>
+                <button class="close-btn" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body" style="padding:1.5rem;text-align:center;">
+                <p style="color:var(--text-secondary);margin-bottom:1.5rem;">
+                    Are you sure you want to permanently delete report <strong id="deleteReportIdLabel"></strong>?
+                    This action cannot be undone.
+                </p>
+                <form id="deleteForm" method="POST">
+                    <div style="display:flex;gap:1rem;justify-content:center;">
+                        <button type="button" class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+                        <button type="submit" class="btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 AI Salary Intelligence Platform · Built with Machine Learning</p>
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/predict">Predict</a>
+            <a href="/history">History</a>
+            <a href="/about">About</a>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+    // =============================================
+    // History Page — Vanilla JS Controller
+    // =============================================
+    (function () {
+        const tbody   = document.getElementById('histTableBody');
+        const emptyEl = document.getElementById('histEmptyState');
+        const emptyMsg= document.getElementById('histEmptyMsg');
+        const paginEl = document.getElementById('histPagination');
+        const searchIn= document.getElementById('histSearchInput');
+        const dateF   = document.getElementById('histDateFilter');
+        const sortSel = document.getElementById('histSortSelect');
+
+        const ROWS_PER_PAGE = 10;
+        let currentPage = 1;
+        let allRows = Array.from(document.querySelectorAll('.hist-row'));
+
+        // ---- Stats Banner ----
+        function computeStats(rows) {
+            if (!rows.length) return;
+            const salaries = rows.map(r => parseFloat(r.dataset.salary));
+            const confs    = rows.map(r => parseFloat(r.dataset.confidence));
+            const highest  = Math.max(...salaries);
+            const avg      = salaries.reduce((a,b)=>a+b,0) / salaries.length;
+            const avgConf  = confs.reduce((a,b)=>a+b,0) / confs.length;
+            document.getElementById('statTotal').textContent     = allRows.length;
+            document.getElementById('statHighest').textContent   = '₹' + highest.toLocaleString('en-IN', {maximumFractionDigits:0});
+            document.getElementById('statAverage').textContent   = '₹' + Math.round(avg).toLocaleString('en-IN');
+            document.getElementById('statConfidence').textContent= avgConf.toFixed(1) + '%';
+        }
+        computeStats(allRows);
+
+        // ---- Filter + Sort ----
+        function getFilteredRows() {
+            const query    = searchIn.value.toLowerCase().trim();
+            const dateVal  = dateF.value;
+            const now      = new Date();
+            return allRows.filter(r => {
+                // Search filter
+                if (query && !r.dataset.search.toLowerCase().includes(query)) return false;
+                // Date filter
+                if (dateVal !== 'all') {
+                    const ts = new Date(r.dataset.timestamp);
+                    const diffMs = now - ts;
+                    if (dateVal === 'today'  && diffMs > 86400000) return false;
+                    if (dateVal === '7days'  && diffMs > 7*86400000) return false;
+                    if (dateVal === '30days' && diffMs > 30*86400000) return false;
+                }
+                return true;
+            });
+        }
+
+        function sortRows(rows) {
+            const sv = sortSel.value;
+            return [...rows].sort((a, b) => {
+                if (sv === 'date_desc')       return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
+                if (sv === 'date_asc')        return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
+                if (sv === 'salary_desc')     return parseFloat(b.dataset.salary) - parseFloat(a.dataset.salary);
+                if (sv === 'salary_asc')      return parseFloat(a.dataset.salary) - parseFloat(b.dataset.salary);
+                if (sv === 'confidence_desc') return parseFloat(b.dataset.confidence) - parseFloat(a.dataset.confidence);
+                return 0;
+            });
+        }
+
+        // ---- Render ----
+        function render() {
+            currentPage = 1;
+            renderPage();
+        }
+
+        function renderPage() {
+            const filtered = sortRows(getFilteredRows());
+            const total    = filtered.length;
+            const pages    = Math.ceil(total / ROWS_PER_PAGE);
+            const start    = (currentPage - 1) * ROWS_PER_PAGE;
+            const end      = Math.min(start + ROWS_PER_PAGE, total);
+            const pageRows = filtered.slice(start, end);
+
+            // Hide all rows
+            allRows.forEach(r => r.style.display = 'none');
+            // Show page rows
+            pageRows.forEach(r => r.style.display = '');
+
+            // Empty state
+            if (total === 0) {
+                emptyEl.style.display = 'flex';
+                emptyMsg.textContent  = allRows.length === 0
+                    ? "You haven't made any predictions yet."
+                    : "No results match your search or filters.";
+                paginEl.innerHTML = '';
+            } else {
+                emptyEl.style.display = 'none';
+                renderPagination(pages);
+            }
+        }
+
+        function renderPagination(pages) {
+            if (pages <= 1) { paginEl.innerHTML = ''; return; }
+            let html = '';
+            if (currentPage > 1) html += `<button class="hist-page-btn" onclick="goPage(${currentPage-1})">‹ Prev</button>`;
+            for (let i = 1; i <= pages; i++) {
+                if (i === currentPage) {
+                    html += `<button class="hist-page-btn active">${i}</button>`;
+                } else if (i === 1 || i === pages || Math.abs(i - currentPage) <= 1) {
+                    html += `<button class="hist-page-btn" onclick="goPage(${i})">${i}</button>`;
+                } else if (Math.abs(i - currentPage) === 2) {
+                    html += `<span class="hist-page-ellipsis">…</span>`;
+                }
+            }
+            if (currentPage < pages) html += `<button class="hist-page-btn" onclick="goPage(${currentPage+1})">Next ›</button>`;
+            paginEl.innerHTML = html;
+        }
+
+        window.goPage = function(p) { currentPage = p; renderPage(); };
+
+        // Debounce search
+        let searchTimer;
+        searchIn.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(render, 200);
+        });
+        dateF.addEventListener('change', render);
+        sortSel.addEventListener('change', render);
+
+        // Show initial premium skeleton loading state
+        function showSkeleton() {
+            let html = '';
+            for (let i = 0; i < 4; i++) {
+                html += `
+                    <tr class="hist-skeleton-row">
+                        <td><span class="sk-block sk-wide skeleton"></span></td>
+                        <td><span class="sk-block sk-short skeleton"></span></td>
+                        <td><span class="sk-block sk-wide skeleton"></span></td>
+                        <td><span class="sk-block sk-med skeleton"></span></td>
+                        <td><span class="sk-block sk-short skeleton"></span></td>
+                        <td><span class="sk-block sk-short skeleton"></span></td>
+                        <td><span class="sk-block sk-wide skeleton"></span></td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        // Staggered initial render for premium SaaS feel
+        showSkeleton();
+        setTimeout(() => {
+            tbody.innerHTML = '';
+            allRows.forEach(r => tbody.appendChild(r));
+            render();
+        }, 550);
+
+        // ---- Delete Modal ----
+        window.openDeleteModal = function(reportId) {
+            document.getElementById('deleteReportIdLabel').textContent = reportId;
+            document.getElementById('deleteForm').action = '/history/delete/' + reportId;
+            document.getElementById('deleteModal').style.display = 'flex';
+        };
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').style.display = 'none';
+        };
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+
+        // ---- Toast helper ----
+        window.showToast = function(msg, type) {
+            const c = document.getElementById('notificationContainer');
+            const t = document.createElement('div');
+            t.className = 'notification ' + (type || 'info');
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(()=>t.remove(),400); }, 3500);
+        };
+    })();
+    </script>
+</body>
+</html>

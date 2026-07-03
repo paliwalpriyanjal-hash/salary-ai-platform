@@ -1,0 +1,13 @@
+{
+  "algorithm": "Ridge",
+  "dataset_name": "Job Salary Prediction Dataset",
+  "training_samples": 200000,
+  "test_samples": 50000,
+  "num_features": 42,
+  "mae": 5434.43,
+  "rmse": 7124.67,
+  "r2_score": 0.9635,
+  "model_version": "v1.0.0",
+  "training_date": "2025-01-01",
+  "total_records": 250000
+}

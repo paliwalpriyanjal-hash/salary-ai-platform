@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about the AI model powering the Salary Intelligence Platform — dataset, features, architecture and evaluation metrics.">
+    <title>About AI Model — AI Salary Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about" class="active">About</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </div>
+
+    <!-- ===========================
+            About Hero
+    ============================ -->
+    <section class="about-hero">
+        <div class="about-hero-inner">
+            <div class="section-label">Transparency & Trust</div>
+            <h1>About the <span class="gradient-text">AI Model</span></h1>
+            <p>A detailed look at the dataset, feature engineering, model architecture, and evaluation metrics powering this platform.</p>
+        </div>
+    </section>
+
+    <div class="about-container">
+
+        <!-- ===========================
+                Overview
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🎯</span>
+                <h2>Platform Overview</h2>
+            </div>
+            <p>The AI Salary Intelligence Platform uses a <strong>supervised machine learning model</strong> trained on real-world salary data to predict expected annual compensation based on a professional's profile. The model analyses 9 input dimensions, transforms them through a 42-feature engineering pipeline, and produces a salary estimate in under 100ms.</p>
+            <p>This is not a lookup table or a hardcoded formula — every prediction is computed from real statistical relationships learned from <strong>{{ metrics.get('total_records', '250,000') | int | format_number }}</strong> salary records.</p>
+        </div>
+
+        <!-- ===========================
+                Dataset
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🗃️</span>
+                <h2>Dataset</h2>
+            </div>
+            <div class="about-dataset-grid">
+                <div class="about-stat-box">
+                    <div class="about-stat-value">{{ "{:,}".format(metrics.get('total_records', 250000)) }}</div>
+                    <div class="about-stat-label">Total Records</div>
+                </div>
+                <div class="about-stat-box">
+                    <div class="about-stat-value">{{ "{:,}".format(metrics.get('training_samples', 200000)) }}</div>
+                    <div class="about-stat-label">Training Samples</div>
+                </div>
+                <div class="about-stat-box">
+                    <div class="about-stat-value">{{ "{:,}".format(metrics.get('test_samples', 50000)) }}</div>
+                    <div class="about-stat-label">Test Samples (20%)</div>
+                </div>
+                <div class="about-stat-box">
+                    <div class="about-stat-value">{{ metrics.get('num_features', 42) }}</div>
+                    <div class="about-stat-label">Engineered Features</div>
+                </div>
+            </div>
+            <div class="about-section-text">
+                <p><strong>Source:</strong> {{ metrics.get('dataset_name', 'Job Salary Prediction Dataset') }} — a curated collection of salary data spanning 12 industries, 10 job titles, 10 global locations, and multiple company sizes.</p>
+                <p>The dataset covers the full professional spectrum from entry-level roles to senior leadership positions, ensuring robust predictions across experience levels.</p>
+            </div>
+        </div>
+
+        <!-- ===========================
+                Features Used
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🔢</span>
+                <h2>Features Used</h2>
+            </div>
+            <p>The model takes 9 raw professional attributes as input and transforms them into {{ metrics.get('num_features', 42) }} engineered features through one-hot encoding, scaling, and interaction creation:</p>
+            <div class="about-features-grid">
+                <div class="about-feature-chip">💼 Job Title</div>
+                <div class="about-feature-chip">📅 Experience Years</div>
+                <div class="about-feature-chip">🎓 Education Level</div>
+                <div class="about-feature-chip">🛠️ Skills Count</div>
+                <div class="about-feature-chip">🏢 Industry</div>
+                <div class="about-feature-chip">🏗️ Company Size</div>
+                <div class="about-feature-chip">🌍 Location</div>
+                <div class="about-feature-chip">🏠 Remote Work</div>
+                <div class="about-feature-chip">🏅 Certifications</div>
+            </div>
+            <div class="about-section-text" style="margin-top:1.5rem;">
+                <h4>Feature Engineering Pipeline</h4>
+                <ul class="about-list">
+                    <li><strong>Categorical Encoding:</strong> Job Title, Education Level, Industry, Company Size, Location and Remote Work are one-hot encoded, expanding 6 categorical columns into 33 binary features.</li>
+                    <li><strong>Numerical Features:</strong> Experience Years, Skills Count and Certifications are kept as-is and standard-scaled.</li>
+                    <li><strong>Scaling:</strong> All 42 features are normalized using StandardScaler to zero mean and unit variance, ensuring the regularized regression model is not biased by feature magnitude.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ===========================
+                Model Architecture
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🤖</span>
+                <h2>Model Architecture</h2>
+            </div>
+            <div class="about-pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="pipeline-step-num">1</div>
+                    <div class="pipeline-step-content">
+                        <h4>Raw Input (9 features)</h4>
+                        <p>User submits professional profile via the prediction form.</p>
+                    </div>
+                </div>
+                <div class="pipeline-connector">↓</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-num">2</div>
+                    <div class="pipeline-step-content">
+                        <h4>ColumnTransformer Preprocessor</h4>
+                        <p>One-hot encodes categorical columns. Passes numerical columns through. Output: 42 features.</p>
+                    </div>
+                </div>
+                <div class="pipeline-connector">↓</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-num">3</div>
+                    <div class="pipeline-step-content">
+                        <h4>StandardScaler</h4>
+                        <p>Normalizes all 42 features to zero-mean, unit-variance. Prevents scale dominance.</p>
+                    </div>
+                </div>
+                <div class="pipeline-connector">↓</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-num">4</div>
+                    <div class="pipeline-step-content">
+                        <h4>Ridge Regression (L2 Regularized)</h4>
+                        <p>Linear model with L2 penalty to prevent overfitting on high-dimensional one-hot encoded data. Outputs continuous salary estimate.</p>
+                    </div>
+                </div>
+                <div class="pipeline-connector">↓</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-num">5</div>
+                    <div class="pipeline-step-content">
+                        <h4>Predicted Annual Salary (₹)</h4>
+                        <p>Final output: estimated annual compensation rounded to 2 decimal places.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+                Evaluation Metrics
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">📊</span>
+                <h2>Evaluation Metrics</h2>
+            </div>
+            <p>Evaluated on a held-out test set of <strong>{{ "{:,}".format(metrics.get('test_samples', 50000)) }}</strong> records that were never seen during training:</p>
+            <div class="about-metrics-grid">
+                <div class="about-metric-card green">
+                    <div class="about-metric-value">{{ metrics.get('r2_score', '—') }}</div>
+                    <div class="about-metric-name">R² Score</div>
+                    <div class="about-metric-desc">Coefficient of Determination — {{ (metrics.get('r2_score', 0) * 100) | round(1) }}% of salary variance explained</div>
+                </div>
+                <div class="about-metric-card blue">
+                    <div class="about-metric-value">₹{{ "{:,.0f}".format(metrics.get('mae', 0)) }}</div>
+                    <div class="about-metric-name">MAE</div>
+                    <div class="about-metric-desc">Mean Absolute Error — average prediction error magnitude</div>
+                </div>
+                <div class="about-metric-card purple">
+                    <div class="about-metric-value">₹{{ "{:,.0f}".format(metrics.get('rmse', 0)) }}</div>
+                    <div class="about-metric-name">RMSE</div>
+                    <div class="about-metric-desc">Root Mean Squared Error — penalises large errors</div>
+                </div>
+            </div>
+            <div class="about-section-text" style="margin-top:1.5rem;">
+                <p>An R² of <strong>{{ metrics.get('r2_score', '—') }}</strong> means the model explains {{ (metrics.get('r2_score', 0) * 100) | round(1) }}% of the salary variation in the test set — a strong result for a regularized linear model on this dataset. The MAE of ₹{{ "{:,.0f}".format(metrics.get('mae', 0)) }} represents the typical prediction error for any individual candidate.</p>
+            </div>
+        </div>
+
+        <!-- ===========================
+                Explainability
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🔍</span>
+                <h2>Explainability Method</h2>
+            </div>
+            <p>Because Ridge Regression is a linear model, every prediction is fully decomposable as a <strong>weighted sum of feature contributions</strong>:</p>
+            <div class="about-formula-box">
+                <code>Salary = Intercept + Σ (coeff<sub>i</sub> × scaled_feature<sub>i</sub>)</code>
+            </div>
+            <div class="about-section-text">
+                <p>Each feature's contribution in rupees is computed as <strong>coefficient × scaled input value</strong>. Features are then grouped into the 9 original input categories (Job Title, Experience, etc.) and ranked by their total contribution.</p>
+                <ul class="about-list">
+                    <li><strong>Positive factors</strong> push the prediction above the baseline intercept.</li>
+                    <li><strong>Negative factors</strong> reduce the prediction below the baseline.</li>
+                    <li>This approach is equivalent to <strong>linear SHAP values</strong> and is mathematically exact — not an approximation.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ===========================
+                Version Info
+        ============================ -->
+        <div class="about-card reveal">
+            <div class="about-card-header">
+                <span class="about-card-icon">🏷️</span>
+                <h2>Model Version & Info</h2>
+            </div>
+            <div class="about-version-grid">
+                <div class="about-version-item">
+                    <span class="about-version-label">Algorithm</span>
+                    <span class="about-version-value">{{ metrics.get('algorithm', 'Ridge') }} Regression (L2)</span>
+                </div>
+                <div class="about-version-item">
+                    <span class="about-version-label">Model Version</span>
+                    <span class="about-version-value">{{ metrics.get('model_version', 'v1.0.0') }}</span>
+                </div>
+                <div class="about-version-item">
+                    <span class="about-version-label">Training Date</span>
+                    <span class="about-version-value">{{ metrics.get('training_date', '2025-01-01') }}</span>
+                </div>
+                <div class="about-version-item">
+                    <span class="about-version-label">Framework</span>
+                    <span class="about-version-value">scikit-learn + Flask</span>
+                </div>
+                <div class="about-version-item">
+                    <span class="about-version-label">Inference Time</span>
+                    <span class="about-version-value">&lt; 100ms</span>
+                </div>
+                <div class="about-version-item">
+                    <span class="about-version-label">Explainability</span>
+                    <span class="about-version-value">Linear Feature Contributions (exact SHAP-equivalent)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="about-cta reveal">
+            <a href="/predict" class="btn btn-glowing">🚀 Try the AI Prediction</a>
+            <a href="/history" class="btn btn-ghost">📚 View Prediction History</a>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 AI Salary Intelligence Platform · Built with Machine Learning</p>
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/predict">Predict</a>
+            <a href="/history">History</a>
+            <a href="/about">About</a>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

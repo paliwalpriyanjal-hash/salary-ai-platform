@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Your AI-powered salary prediction result. See your estimated annual salary, market position, and detailed insights.">
+
+    <title>Salary Prediction Result — AI Salary Intelligence</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js (Step 12) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- html2canvas & jsPDF for AI Report Rebuild -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- ===========================
+            Navbar
+    ============================ -->
+
+    <nav class="navbar" id="navbar">
+
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict Again</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict">Predict Again</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </div>
+
+
+    <!-- ===========================
+            Result Dashboard
+    ============================ -->
+
+    <section class="result-section">
+
+        <div class="result-container">
+
+            <!-- Step 10: Result Header -->
+            <div class="result-header reveal">
+                <div class="success-icon">✅</div>
+                <h1>Salary Prediction <span class="gradient-text">Completed</span></h1>
+                <p>Our Machine Learning model successfully analyzed your professional profile.</p>
+            </div>
+
+
+            <!-- Step 10: Animated Salary Display Card -->
+            <div class="salary-display-card reveal">
+
+                <div class="salary-label">Your Estimated Annual Salary</div>
+
+                <!--
+                    PRESERVED: id="salaryCounter" (used by result.js counter animation)
+                    PRESERVED: data-salary="{{ prediction }}" (Jinja2 template variable)
+                -->
+                <div
+                    class="salary-box"
+                    id="salaryCounter"
+                    data-salary="{{ prediction }}">
+                    ₹0
+                </div>
+
+                <div class="confidence-badge">
+                    ✨ {{ confidence }}% Confidence Score
+                </div>
+
+            </div>
+
+
+            <!-- Step 15: Salary Gauge -->
+            <div class="gauge-section reveal">
+
+                <div class="gauge-title">📊 Salary Position in Market</div>
+
+                <div class="gauge-wrapper">
+                    <canvas id="salaryGauge" width="320" height="180"></canvas>
+                </div>
+
+                <div class="gauge-labels">
+                    <span class="gauge-label">Low</span>
+                    <span class="gauge-label">Average</span>
+                    <span class="gauge-label">High</span>
+                </div>
+
+            </div>
+
+
+            <!-- ===== Salary Analysis Section ===== -->
+            <div class="salary-analysis-section reveal">
+                <div class="salary-analysis-header">
+                    <span class="salary-analysis-icon">📈</span>
+                    <h2>Salary Market Analysis</h2>
+                </div>
+
+                <!-- Salary Meter -->
+                <div class="salary-meter-wrapper">
+                    <div class="salary-meter-labels">
+                        <span class="meter-zone-label low">Low</span>
+                        <span class="meter-zone-label mid">Average</span>
+                        <span class="meter-zone-label high">High</span>
+                    </div>
+                    <div class="salary-meter-track">
+                        <div class="salary-meter-zone low-zone"></div>
+                        <div class="salary-meter-zone mid-zone"></div>
+                        <div class="salary-meter-zone high-zone"></div>
+                        <div class="salary-meter-needle" id="salaryMeterNeedle"></div>
+                    </div>
+                    <div class="salary-meter-values">
+                        <span id="meterLowVal" class="meter-val-label">—</span>
+                        <span id="meterMidVal" class="meter-val-label">—</span>
+                        <span id="meterHighVal" class="meter-val-label">—</span>
+                    </div>
+                </div>
+
+                <!-- Market Stat Badges -->
+                <div class="salary-stat-badges">
+                    <div class="salary-stat-badge" id="badgeIndustryAvg">
+                        <span class="stat-badge-icon">🏢</span>
+                        <div class="stat-badge-content">
+                            <span class="stat-badge-label">Industry Average</span>
+                            <span class="stat-badge-value" id="badgeIndustryAvgVal">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="salary-stat-badge" id="badgeDiff">
+                        <span class="stat-badge-icon">📊</span>
+                        <div class="stat-badge-content">
+                            <span class="stat-badge-label">Salary Difference</span>
+                            <span class="stat-badge-value" id="badgeDiffVal">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="salary-stat-badge" id="badgePercentile">
+                        <span class="stat-badge-icon">🏆</span>
+                        <div class="stat-badge-content">
+                            <span class="stat-badge-label">Salary Percentile</span>
+                            <span class="stat-badge-value" id="badgePercentileVal">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Step 11: AI Dashboard Cards -->
+            <div class="dashboard-grid reveal">
+
+                <div class="dashboard-card">
+                    <span class="dashboard-card-icon">🎯</span>
+                    <h3>Confidence</h3>
+                    <!-- PRESERVED: {{ confidence }} -->
+                    <p>{{ confidence }}%</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="dashboard-card-icon">⚡</span>
+                    <h3>Prediction Time</h3>
+                    <!-- PRESERVED: {{ execution_time }} -->
+                    <p>{{ execution_time }}s</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="dashboard-card-icon">🗓️</span>
+                    <h3>Generated At</h3>
+                    <!-- PRESERVED: {{ prediction_time }} -->
+                    <p>{{ prediction_time }}</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="dashboard-card-icon">🤖</span>
+                    <h3>AI Model</h3>
+                    <p id="dashModelName">Ridge Regression</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <span class="dashboard-card-icon">✅</span>
+                    <h3>Status</h3>
+                    <p>Completed</p>
+                </div>
+
+                <div class="dashboard-card report-id-card">
+                    <span class="dashboard-card-icon">🔖</span>
+                    <h3>Report ID</h3>
+                    <!-- PRESERVED: {{ report_id }} -->
+                    <p>{{ report_id }}</p>
+                </div>
+
+            </div>
+
+
+
+            <!-- ===== Model Information Panel ===== -->
+            <div class="model-info-panel reveal">
+                <div class="model-info-panel-header">
+                    <span class="model-info-panel-icon">🤖</span>
+                    <h2>Model Information</h2>
+                    <a href="/about" class="model-info-about-link">Learn More →</a>
+                </div>
+                <div class="model-info-grid" id="modelInfoGrid">
+                    <div class="model-info-item">
+                        <span class="model-info-label">Algorithm</span>
+                        <span class="model-info-value" id="miAlgorithm">—</span>
+                    </div>
+                    <div class="model-info-item">
+                        <span class="model-info-label">Dataset</span>
+                        <span class="model-info-value" id="miDataset">—</span>
+                    </div>
+                    <div class="model-info-item">
+                        <span class="model-info-label">Training Samples</span>
+                        <span class="model-info-value" id="miTrainSamples">—</span>
+                    </div>
+                    <div class="model-info-item">
+                        <span class="model-info-label">Features</span>
+                        <span class="model-info-value" id="miFeatures">—</span>
+                    </div>
+                    <div class="model-info-item highlight-green">
+                        <span class="model-info-label">R² Score</span>
+                        <span class="model-info-value" id="miR2">—</span>
+                    </div>
+                    <div class="model-info-item highlight-blue">
+                        <span class="model-info-label">MAE</span>
+                        <span class="model-info-value" id="miMae">—</span>
+                    </div>
+                    <div class="model-info-item highlight-purple">
+                        <span class="model-info-label">RMSE</span>
+                        <span class="model-info-value" id="miRmse">—</span>
+                    </div>
+                    <div class="model-info-item">
+                        <span class="model-info-label">Model Version</span>
+                        <span class="model-info-value" id="miVersion">—</span>
+                    </div>
+                    <div class="model-info-item">
+                        <span class="model-info-label">Prediction Time</span>
+                        <span class="model-info-value" id="miPredTime">—</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Step 12: Chart.js Analytics Charts -->
+            <div class="charts-section reveal">
+
+                <div class="charts-section-title">📈 Salary Analytics</div>
+
+                <div class="charts-grid">
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span>📊</span> Salary Comparison
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salaryComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span>📉</span> Experience Impact
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="experienceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span>🕸️</span> Skills Analysis
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span>🥧</span> Industry Insights
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="industryChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Step 14: AI Insights Section -->
+            <div class="insights-section reveal">
+
+                <div class="insights-section-title">💡 AI Insights</div>
+
+                <!-- Populated dynamically by result.js -->
+                <div class="insights-grid" id="insightsGrid"></div>
+
+            </div>
+
+            <!-- Model Explainability Section (Phase 6) -->
+            <div class="explainability-section reveal">
+                <div class="insights-section-title">🔍 Model Explainability & Transparency</div>
+                <p class="explainability-desc" id="aiExplanationText">Generating AI explanation based on real feature contributions...</p>
+
+                <!-- Transparency Panel -->
+                <div class="transparency-panel">
+                    <div class="transparency-item">
+                        <span class="t-label">Model Name</span>
+                        <strong id="tModelName">Ridge Regression</strong>
+                    </div>
+                    <div class="transparency-item">
+                        <span class="t-label">Explainability Method</span>
+                        <strong>Linear Feature Contributions</strong>
+                    </div>
+                    <div class="transparency-item">
+                        <span class="t-label">Base Value (Intercept)</span>
+                        <strong id="tBaseValue">₹ 0</strong>
+                    </div>
+                </div>
+
+                <!-- Feature Contributions Chart -->
+                <div class="feature-contributions-wrapper">
+                    <h4>Feature Contributions (Why did the model predict this?)</h4>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="explainabilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- User Information Summary -->
+            <div class="reveal">
+
+                <div class="summary-title">👤 Your Professional Profile</div>
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+                        <span>Job Title</span>
+                        <!-- PRESERVED: {{ job_title }} -->
+                        <strong>{{ job_title }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Experience</span>
+                        <!-- PRESERVED: {{ experience_years }} -->
+                        <strong>{{ experience_years }} Years</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Education</span>
+                        <!-- PRESERVED: {{ education_level }} -->
+                        <strong>{{ education_level }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Skills Count</span>
+                        <!-- PRESERVED: {{ skills_count }} -->
+                        <strong>{{ skills_count }} Skills</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Industry</span>
+                        <!-- PRESERVED: {{ industry }} -->
+                        <strong>{{ industry }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Company Size</span>
+                        <!-- PRESERVED: {{ company_size }} -->
+                        <strong>{{ company_size }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Location</span>
+                        <!-- PRESERVED: {{ location }} -->
+                        <strong>{{ location }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Remote Work</span>
+                        <!-- PRESERVED: {{ remote_work }} -->
+                        <strong>{{ remote_work }}</strong>
+                    </div>
+
+                    <div class="summary-card">
+                        <span>Certifications</span>
+                        <!-- PRESERVED: {{ certifications }} -->
+                        <strong>{{ certifications }}</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Step 16: AI Report Generation Section -->
+            <div class="report-generation-section reveal">
+                <div class="summary-title">📑 Executive Report Summary</div>
+                
+                <div class="report-summary-card">
+                    <div class="report-summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-item-icon">✅</span>
+                            <div class="summary-item-content">
+                                <span class="summary-item-label">Prediction</span>
+                                <strong>₹ {{ prediction }}</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-icon">🎯</span>
+                            <div class="summary-item-content">
+                                <span class="summary-item-label">Confidence</span>
+                                <strong>{{ confidence }}%</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-icon">🤖</span>
+                            <div class="summary-item-content">
+                                <span class="summary-item-label">Model Used</span>
+                                <strong>Ridge Regression</strong>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-item-icon">🗓️</span>
+                            <div class="summary-item-content">
+                                <span class="summary-item-label">Report Timestamp</span>
+                                <strong id="cardTimestamp">{{ prediction_time }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-summary-text">
+                        <div class="summary-text-block">
+                            <h4>💡 Key AI Insight</h4>
+                            <p id="summaryInsightText">Analyzing your profile...</p>
+                        </div>
+                        <div class="summary-text-block">
+                            <h4>🚀 Recommendation</h4>
+                            <p id="summaryRecommendationText">Generating recommendations...</p>
+                        </div>
+                    </div>
+
+                    <div class="report-actions-primary">
+                        <button id="btnDownloadPdf" class="btn btn-glowing btn-large">
+                            📄 Download AI Report (PDF)
+                        </button>
+                        <button id="btnPreviewReport" class="btn btn-ghost btn-large">
+                            👁️ Preview
+                        </button>
+                    </div>
+                    
+                    <div class="report-actions-secondary">
+                        <button id="btnPrint" class="action-btn" title="Print Report">🖨️ Print</button>
+                        <button id="btnShare" class="action-btn" title="Share Report">🔗 Share</button>
+                        <button id="btnExportPng" class="action-btn" title="Export as PNG">🖼️ PNG</button>
+                        <button id="btnExportJson" class="action-btn" title="Export as JSON">JSON</button>
+                        <button id="btnCopySummary" class="action-btn" title="Copy Summary">📋 Copy</button>
+                        <button id="btnDownloadCharts" class="action-btn" title="Download Charts">📊 Charts</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="button-group reveal">
+                <a href="/predict" class="btn">🔄 Predict Again</a>
+                <a href="/history" class="btn btn-ghost">📚 View History</a>
+                <a href="/" class="btn btn-ghost">🏠 Back to Home</a>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!--
+        Pass Jinja2 data to JavaScript safely via inline script.
+        This allows result.js to use prediction values for charts and insights.
+        PRESERVED: All Jinja2 template variables.
+    -->
+    <script>
+        var rawExpl = '{{ explainability | safe }}';
+        var parsedExpl = null;
+        if(rawExpl && rawExpl !== '') {
+            try { parsedExpl = JSON.parse(rawExpl); } catch(e){}
+        }
+
+        var rawSalaryStats = '{{ salary_stats | default("{}") | safe }}';
+        var parsedSalaryStats = {};
+        try { parsedSalaryStats = JSON.parse(rawSalaryStats); } catch(e) {}
+
+        var rawModelMetrics = '{{ model_metrics | default("{}") | safe }}';
+        var parsedModelMetrics = {};
+        try { parsedModelMetrics = JSON.parse(rawModelMetrics); } catch(e) {}
+
+        window.PREDICTION_DATA = {
+            prediction:     {{ prediction }},
+            experience:     {{ experience_years }},
+            skills:         {{ skills_count }},
+            certifications: {{ certifications }},
+            confidence:     {{ confidence }},
+            executionTime:  {{ execution_time }},
+            education:      "{{ education_level }}",
+            industry:       "{{ industry }}",
+            location:       "{{ location }}",
+            companySize:    "{{ company_size }}",
+            remoteWork:     "{{ remote_work }}",
+            jobTitle:       "{{ job_title }}",
+            reportId:       "{{ report_id }}",
+            predictionTime: "{{ prediction_time }}",
+            explainability:  parsedExpl,
+            salaryStats:     parsedSalaryStats,
+            modelMetrics:    parsedModelMetrics,
+            isHistory:       {% if is_history %}true{% else %}false{% endif %}
+        };
+    </script>
+
+    <!-- Project JS (hamburger, scroll observer) -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Result Animation JS (PRESERVED: salary counter + extended with charts/gauge/insights) -->
+    <script src="{{ url_for('static', filename='js/result.js') }}"></script>
+
+    <!-- Rebuilt 5-Page Report Container for PDF Generation -->
+    <div id="pdfReportContainer" class="pdf-report-container">
+        
+        <!-- Page 1: Cover Page -->
+        <div class="pdf-page pdf-cover">
+            <div class="pdf-cover-content">
+                <div class="pdf-logo">🧠 AI<span>Salary</span></div>
+                <h1 class="pdf-title">EXECUTIVE AI INTELLIGENCE REPORT</h1>
+                <div class="pdf-subtitle">Comprehensive Profile & Salary Analysis</div>
+                
+                <div class="pdf-meta-box">
+                    <p><strong>Report ID:</strong> <span class="pdf-report-id"></span></p>
+                    <p><strong>Generated Timestamp:</strong> {{ prediction_time }}</p>
+                    <p><strong>Platform:</strong> AI Salary Intelligence Engine v2.5</p>
+                </div>
+            </div>
+            
+            <div class="pdf-cover-user-info">
+                <h3>👤 Candidate Professional Profile</h3>
+                <div class="pdf-user-grid">
+                    <div class="pdf-user-cell"><strong>Job Title:</strong> {{ job_title }}</div>
+                    <div class="pdf-user-cell"><strong>Experience:</strong> {{ experience_years }} Years</div>
+                    <div class="pdf-user-cell"><strong>Education:</strong> {{ education_level }}</div>
+                    <div class="pdf-user-cell"><strong>Skills Count:</strong> {{ skills_count }} Skills</div>
+                    <div class="pdf-user-cell"><strong>Industry:</strong> {{ industry }}</div>
+                    <div class="pdf-user-cell"><strong>Company Size:</strong> {{ company_size }}</div>
+                    <div class="pdf-user-cell"><strong>Location:</strong> {{ location }}</div>
+                    <div class="pdf-user-cell"><strong>Remote Work:</strong> {{ remote_work }}</div>
+                    <div class="pdf-user-cell"><strong>Certifications:</strong> {{ certifications }}</div>
+                </div>
+            </div>
+            
+            <div class="pdf-footer-note">CONFIDENTIAL • GENERATED BY AI DATA INTELLIGENCE PLATFORM</div>
+        </div>
+        
+        <!-- Page 2: Prediction Summary -->
+        <div class="pdf-page">
+            <div class="pdf-page-header">
+                <div class="pdf-header-left">AI Prediction Summary</div>
+                <div class="pdf-header-right">Report ID: <span class="pdf-report-id"></span></div>
+            </div>
+            
+            <h2 class="pdf-page-title">Executive Prediction Summary</h2>
+            <p class="pdf-page-desc">Analysis of expected market value based on input parameters analyzed by Ridge Regression L2 regularization ML model.</p>
+            
+            <div class="pdf-prediction-hero">
+                <div class="pdf-hero-label">ESTIMATED ANNUAL COMPENSATION</div>
+                <div class="pdf-hero-value">₹ {{ prediction }}</div>
+                <div class="pdf-hero-confidence-badge">
+                    <span>🎯 Prediction Confidence Score:</span> <strong>{{ confidence }}%</strong>
+                </div>
+                <div class="pdf-progress-bar">
+                    <div class="pdf-progress-fill" style="width: {{ confidence }}%;"></div>
+                </div>
+            </div>
+            
+            <div class="pdf-summary-cards-grid">
+                <div class="pdf-summary-card">
+                    <span class="pdf-summary-card-icon">🤖</span>
+                    <div>
+                        <h4>Machine Learning Model</h4>
+                        <p>Ridge Regression (L2 Regularized Linear Predictor)</p>
+                    </div>
+                </div>
+                <div class="pdf-summary-card">
+                    <span class="pdf-summary-card-icon">⚡</span>
+                    <div>
+                        <h4>Computational Cost</h4>
+                        <p>Inference compiled in {{ execution_time }} seconds</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pdf-insights-box">
+                <h3>💡 AI Insights & Summary</h3>
+                <div id="pdfInsightsText" class="pdf-insights-content">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            
+            <div class="pdf-page-footer">Page 2 of 5 • Confidential</div>
+        </div>
+        
+        <!-- Page 3: Model Explainability -->
+        <div class="pdf-page">
+            <div class="pdf-page-header">
+                <div class="pdf-header-left">Model Explainability & Transparency</div>
+                <div class="pdf-header-right">Report ID: <span class="pdf-report-id"></span></div>
+            </div>
+            
+            <h2 class="pdf-page-title">Model Explainability (SHAP Value Analysis)</h2>
+            <p class="pdf-page-desc">This section breaks down how individual candidate attributes contributed positively or negatively to the final predicted salary of ₹ {{ prediction }}.</p>
+            
+            <!-- Feature Importance Horizontal Bar Chart Image Slot -->
+            <div class="pdf-explainability-visual">
+                <h4>Feature Importance Visualized</h4>
+                <div class="pdf-chart-container-wrapper">
+                    <img id="pdfExplainabilityChartImg" src="" alt="Feature Contributions Chart" style="max-height: 220px;">
+                </div>
+            </div>
+            
+            <!-- SHAP Explanation Text -->
+            <div class="pdf-shap-explanation-box">
+                <h4>SHAP Explanation Detail</h4>
+                <p id="pdfExplainabilityText" class="pdf-shap-text">Generating explanation...</p>
+            </div>
+            
+            <!-- Feature Contribution Table -->
+            <div class="pdf-table-wrapper">
+                <h4>Feature Contribution Details</h4>
+                <table class="pdf-data-table" id="pdfFeatureContributionTable">
+                    <thead>
+                        <tr>
+                            <th>Feature Name</th>
+                            <th>Feature Value</th>
+                            <th>Contribution (₹)</th>
+                            <th>Impact Direction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdfFeatureContributionTableBody">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pdf-page-footer">Page 3 of 5 • Confidential</div>
+        </div>
+        
+        <!-- Page 4: Charts Dashboard -->
+        <div class="pdf-page">
+            <div class="pdf-page-header">
+                <div class="pdf-header-left">Analytics Visualizations Dashboard</div>
+                <div class="pdf-header-right">Report ID: <span class="pdf-report-id"></span></div>
+            </div>
+            
+            <h2 class="pdf-page-title">AI Analytics Dashboard</h2>
+            <p class="pdf-page-desc">Visual breakdown of prediction factors, peer market comparison, strength indicators, and compensation structure.</p>
+            
+            <div class="pdf-charts-layout">
+                <div class="pdf-chart-pair">
+                    <div class="pdf-chart-box">
+                        <h5>Prediction Confidence (Market Position)</h5>
+                        <div class="pdf-chart-img-slot">
+                            <img id="pdfChartGaugeImg" src="" alt="Prediction Confidence Gauge">
+                        </div>
+                    </div>
+                    <div class="pdf-chart-box">
+                        <h5>Feature Importance strength profile</h5>
+                        <div class="pdf-chart-img-slot">
+                            <img id="pdfChartSkillsImg" src="" alt="Skills Radar Chart">
+                        </div>
+                    </div>
+                </div>
+                <div class="pdf-chart-pair" style="margin-top: 15px;">
+                    <div class="pdf-chart-box">
+                        <h5>Salary Comparison (Peer Analytics)</h5>
+                        <div class="pdf-chart-img-slot">
+                            <img id="pdfChartComparisonImg" src="" alt="Salary Comparison Chart">
+                        </div>
+                    </div>
+                    <div class="pdf-chart-box">
+                        <h5>Compensation Distribution breakdown</h5>
+                        <div class="pdf-chart-img-slot">
+                            <img id="pdfChartIndustryImg" src="" alt="Industry Doughnut Chart">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pdf-page-footer">Page 4 of 5 • Confidential</div>
+        </div>
+        
+        <!-- Page 5: Recommendations & Action Plan -->
+        <div class="pdf-page">
+            <div class="pdf-page-header">
+                <div class="pdf-header-left">AI Recommendations & Business Insights</div>
+                <div class="pdf-header-right">Report ID: <span class="pdf-report-id"></span></div>
+            </div>
+            
+            <h2 class="pdf-page-title">Executive Action Plan</h2>
+            <p class="pdf-page-desc">Data-driven recommendations generated by our AI model to maximize market value and accelerate professional growth.</p>
+            
+            <div class="pdf-rec-container">
+                <div class="pdf-rec-card pdf-rec-strengths-card">
+                    <h4>💡 Strengths & Market Advantages</h4>
+                    <ul id="pdfStrengthsList">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                </div>
+                
+                <div class="pdf-rec-card pdf-rec-weaknesses-card">
+                    <h4>⚠️ Weaknesses & Market Risks</h4>
+                    <ul id="pdfWeaknessesList">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                </div>
+                
+                <div class="pdf-rec-card pdf-rec-actions-card">
+                    <h4>🚀 Suggested Next Actions</h4>
+                    <ul id="pdfNextActionsList">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pdf-business-insights">
+                <h4>🎯 Business Insights & Industry Placement</h4>
+                <p>Based on your located region and target industry size, salaries in this percentile scale with systemic design capabilities. Continuing to certify in professional frameworks offers an asymmetrical return on career positioning.</p>
+            </div>
+            
+            <div class="pdf-page-footer-final">
+                <p class="pdf-footer-confidential">STRICTLY CONFIDENTIAL • AI DATA INTELLIGENCE PLATFORM REPORT</p>
+                <p class="pdf-footer-pagination">Page 5 of 5</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications & Loading -->
+    <div id="notificationContainer" class="notification-container"></div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loadingText" style="color: white; font-weight: 600;">Generating AI Report...</p>
+    </div>
+    
+    <!-- Report Preview Modal -->
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0; font-size:20px;">📄 Report Preview</h2>
+                <button id="closePreviewBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContainer"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

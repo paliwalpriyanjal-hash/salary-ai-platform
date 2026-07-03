@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Enter your professional details to receive an instant AI-powered salary prediction.">
+
+    <title>Predict Salary — AI Salary Intelligence Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- ======================================
+            AI Loading Screen (Step 8)
+            PRESERVED: id="loading-screen", id="loading-text"
+    ======================================= -->
+
+    <div id="loading-screen">
+
+        <div class="loader-box">
+
+            <!-- Premium dual-ring loader -->
+            <div class="loader-ring-outer">
+                <div class="loader-ring-inner"></div>
+            </div>
+
+            <!-- PRESERVED: id="loading-text" -->
+            <h2 id="loading-text">🧠 Loading AI Model...</h2>
+
+            <!-- Animated dots -->
+            <div class="loader-dots">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="loading-progress-bar">
+                <div class="loading-progress-fill" id="progressFill"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar" id="navbar">
+
+        <a href="/" class="logo">
+            <div class="logo-icon">🧠</div>
+            <div class="logo-text">AI<span>Salary</span></div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="#" class="nav-cta">Predict Now</a></li>
+        </ul>
+
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="#">Predict</a></li>
+        </ul>
+    </div>
+
+
+    <!-- ================= PREDICTION DASHBOARD ================= -->
+
+    <section class="prediction-container">
+
+        <!-- ===== Left Side ===== -->
+
+        <div class="prediction-left">
+
+            <div class="section-label">AI Dashboard</div>
+
+            <h1>AI Salary<br><span class="gradient-text">Intelligence</span></h1>
+
+            <p>
+                Predict your expected salary using our Machine Learning model
+                trained on thousands of real-world salary records. Fill in
+                your professional details to get an instant prediction.
+            </p>
+
+            <!-- Step 3: AI Globe (replaces the ₹ symbol)
+                 PRESERVED: id="rupee-container" (Three.js mounts here) -->
+            <div id="rupee-container"></div>
+
+            <!-- Model Statistics -->
+            <div class="model-info">
+
+                <div class="info-box">
+                    <h3>96%</h3>
+                    <p>Accuracy</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>50K+</h3>
+                    <p>Records</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>&lt;100ms</h3>
+                    <p>Prediction</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===== Right Side — Prediction Form (Step 6) ===== -->
+
+        <div class="prediction-right">
+
+            <div class="form-header">
+                <h2>Salary Prediction Form</h2>
+                <p>Fill in your professional details below to receive your AI-powered salary prediction.</p>
+            </div>
+
+            <!-- PRESERVED: action="/predict" method="POST" -->
+            <form action="/predict" method="POST" id="predictionForm">
+
+                <div class="form-grid">
+
+                    <!-- Job Title — full width dropdown -->
+                    <div class="input-group form-grid-full">
+                        <label class="input-label" for="job_title">Job Title</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">💼</span>
+                            <!-- PRESERVED: name="job_title" -->
+                            <select name="job_title" id="job_title" required>
+                                <option value="">Select Job Title</option>
+                                <option>AI Engineer</option>
+                                <option>Backend Developer</option>
+                                <option>Business Analyst</option>
+                                <option>Cloud Engineer</option>
+                                <option>Cybersecurity Analyst</option>
+                                <option>Data Analyst</option>
+                                <option>Data Scientist</option>
+                                <option>DevOps Engineer</option>
+                                <option>Frontend Developer</option>
+                                <option>Machine Learning Engineer</option>
+                                <option>Product Manager</option>
+                                <option>Software Engineer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Experience Years -->
+                    <div class="input-group">
+                        <label class="input-label" for="experience_years">Experience (Years)</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📅</span>
+                            <!-- PRESERVED: name="experience_years" -->
+                            <input
+                                type="number"
+                                id="experience_years"
+                                name="experience_years"
+                                placeholder="e.g. 3"
+                                min="0"
+                                max="50"
+                                step="0.5"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Skills Count -->
+                    <div class="input-group">
+                        <label class="input-label" for="skills_count">Skills Count</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🛠️</span>
+                            <!-- PRESERVED: name="skills_count" -->
+                            <input
+                                type="number"
+                                id="skills_count"
+                                name="skills_count"
+                                placeholder="e.g. 8"
+                                min="0"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Education Level -->
+                    <div class="input-group">
+                        <label class="input-label" for="education_level">Education Level</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🎓</span>
+                            <!-- PRESERVED: name="education_level" -->
+                            <select name="education_level" id="education_level" required>
+                                <option value="">Select Education</option>
+                                <option>Bachelor</option>
+                                <option>Diploma</option>
+                                <option>High School</option>
+                                <option>Master</option>
+                                <option>PhD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Industry -->
+                    <div class="input-group">
+                        <label class="input-label" for="industry">Industry</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏢</span>
+                            <!-- PRESERVED: name="industry" -->
+                            <select name="industry" id="industry" required>
+                                <option value="">Select Industry</option>
+                                <option>Consulting</option>
+                                <option>Education</option>
+                                <option>Finance</option>
+                                <option>Government</option>
+                                <option>Healthcare</option>
+                                <option>Manufacturing</option>
+                                <option>Media</option>
+                                <option>Retail</option>
+                                <option>Technology</option>
+                                <option>Telecom</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Company Size -->
+                    <div class="input-group">
+                        <label class="input-label" for="company_size">Company Size</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏗️</span>
+                            <!-- PRESERVED: name="company_size" -->
+                            <select name="company_size" id="company_size" required>
+                                <option value="">Select Size</option>
+                                <option>Enterprise</option>
+                                <option>Large</option>
+                                <option>Medium</option>
+                                <option>Small</option>
+                                <option>Startup</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="input-group">
+                        <label class="input-label" for="location">Location</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🌍</span>
+                            <!-- PRESERVED: name="location" -->
+                            <select name="location" id="location" required>
+                                <option value="">Select Location</option>
+                                <option>Australia</option>
+                                <option>Canada</option>
+                                <option>Germany</option>
+                                <option>India</option>
+                                <option>Netherlands</option>
+                                <option>Remote</option>
+                                <option>Singapore</option>
+                                <option>Sweden</option>
+                                <option>UK</option>
+                                <option>USA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Remote Work -->
+                    <div class="input-group">
+                        <label class="input-label" for="remote_work">Remote Work</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏠</span>
+                            <!-- PRESERVED: name="remote_work" -->
+                            <select name="remote_work" id="remote_work" required>
+                                <option value="">Select Option</option>
+                                <option>Hybrid</option>
+                                <option>No</option>
+                                <option>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Certifications — full width -->
+                    <div class="input-group form-grid-full">
+                        <label class="input-label" for="certifications">Certifications</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏅</span>
+                            <!-- PRESERVED: name="certifications" -->
+                            <input
+                                type="number"
+                                id="certifications"
+                                name="certifications"
+                                placeholder="Number of professional certifications (e.g. 2)"
+                                min="0"
+                                required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PRESERVED: id="predictBtn" -->
+                <button type="submit" id="predictBtn" class="btn-predict">
+                    <span class="btn-text">🚀 Predict My Salary</span>
+                    <div class="btn-spinner"></div>
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- Three.js (for AI Globe in left panel) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Project JS (canvas globe, animations, scroll observer) -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Loading JS (PRESERVED: form submit interceptor + loading screen) -->
+    <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
+
+</body>
+
+</html>
