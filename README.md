@@ -5,9 +5,8 @@
 [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-1.3.0-orange.svg)](https://scikit-learn.org/)
 [![SQLite](https://img.shields.io/badge/database-SQLite-blue.svg)](https://www.sqlite.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Stars](https://img.shields.io/github/stars/yourusername/salary-ai-platform?style=social)](https://github.com/yourusername/salary-ai-platform)
 
-> **Enterprise-grade AI-powered Salary Prediction Platform** — Predict your expected salary with 96% accuracy using machine learning trained on 50,000+ real-world salary records. Get instant insights, explainable predictions, and professional PDF reports.
+> **AI-Powered Salary Prediction Platform** — Predict salary expectations using machine learning trained on 250,000 real-world salary records. Analyze your professional profile and get instant predictions with detailed market insights.
 
 ---
 
@@ -31,98 +30,90 @@
 
 ## 🎯 Overview
 
-**AI Salary Intelligence Platform** is an enterprise-grade salary prediction system that combines machine learning with an intuitive user interface. Whether you're negotiating a job offer, planning a career transition, or benchmarking compensation, our AI model delivers accurate, explainable salary predictions in milliseconds.
+**AI Salary Intelligence Platform** is a machine learning-powered web application that predicts salary expectations based on professional profile information. The platform uses a Ridge regression model trained on 250,000 salary records to provide accurate predictions along with industry benchmarking.
 
 ### Who It's For
-- **Job Seekers**: Understand fair market value for your profile
-- **HR Professionals**: Benchmark compensation packages
-- **Career Coaches**: Guide clients with data-driven insights
-- **Researchers**: Analyze salary trends across industries
+- **Job Seekers**: Understand fair market value for your skills and experience
+- **Career Planners**: Get data-driven salary expectations before career moves
+- **Professionals**: Benchmark your compensation against industry standards
 
-### Business Value
-- **96% Prediction Accuracy** — Trained on verified salary records
-- **Sub-100ms Response Time** — Real-time predictions at scale
-- **Explainable AI** — Understand which factors drive your salary
-- **Professional Reports** — PDF export with comprehensive analysis
-- **Privacy-First** — No data storage without consent
+### Key Benefits
+- **Accurate Predictions** — Ridge regression model with 96.35% R² score
+- **Fast Inference** — Get predictions in seconds with detailed analysis
+- **Market Insights** — Compare your prediction against industry averages and percentiles
+- **Prediction History** — Track all your salary predictions in a persistent database
+- **Professional Reports** — Download comprehensive PDF reports with analysis and recommendations
 
 ---
 
 ## ✨ Features
 
-### 🎯 Core Prediction Engine
-- **Advanced ML Model**: Random Forest / XGBoost trained on 50K+ records
-- **Real-time Predictions**: Sub-100ms inference time
-- **Multiple Input Factors**: Job title, experience, education, skills, industry, company size, location, remote work status
-- **96% Accuracy**: Validated against hold-out test set
+### 🎯 Salary Prediction
+- **Ridge Regression Model**: Trained on 250,000 salary records with 42 engineered features
+- **Comprehensive Input Analysis**: Job title, experience, education, skills, industry, company size, location, remote work preference, and certifications
+- **Accurate Predictions**: R² Score 0.9635 (96.35% variance explained) with MAE of $5,434
 
-### 📊 AI Insights & Analytics
-- **Industry Benchmarking**: Compare against industry averages
-- **Percentile Ranking**: Understand where you stand
-- **Salary Range**: Low, Mid, High salary projections
-- **Experience Trend**: How salary evolves with years of experience
-- **Market Insights**: Industry-specific salary patterns
+### 📊 Market Insights
+- **Industry Benchmarking**: Compare your prediction against industry and job-title averages
+- **Percentile Ranking**: See where you stand relative to peers (0-99 percentile)
+- **Salary Ranges**: Low (10th percentile), Mid (50th percentile), and High (90th percentile) salary projections
+- **Salary Differential**: Understand how your prediction compares to market average
 
-### 🤖 Explainable AI (XAI)
-- **Feature Importance**: See which factors influence your salary most
-- **SHAP Analysis** (Coming Soon): Deep-dive feature contributions
-- **Recommendation Engine**: Actionable insights to increase earning potential
-- **Transparent Model**: Full disclosure of model metrics and training data
+### 📈 Prediction Analysis
+- **Feature Contribution**: See which factors most influence the prediction
+- **Confidence Scoring**: Model confidence level for each prediction
+- **Experience Projections**: Estimated salary growth trends based on years of experience
+- **Explainability Data**: Detailed breakdown of model decision factors
 
 ### 💾 Prediction History
-- **SQLite Database**: Persistent storage of all predictions
-- **Search & Filter**: Find past predictions instantly
-- **Analytics Dashboard**: Track salary queries over time
-- **Export Capability**: Download predictions as JSON
+- **SQLite Database**: Persistent storage of all predictions with timestamps
+- **Prediction Management**: View, review, and delete past predictions
+- **History Dashboard**: Browse all saved predictions with filtering
+- **Report Generation**: Download professional PDF reports for each prediction
 
 ### 📄 Professional PDF Reports
-- **Executive Summary**: Key findings and insights
-- **Detailed Analysis**: Comprehensive salary breakdown
-- **Market Comparison**: Industry benchmarks
-- **Recommendations**: Actionable steps to increase salary
-- **Charts & Visualizations**: Professional graphs and trends
+- **Executive Summary**: Predicted salary, market comparison, and key insights
+- **Detailed Analysis**: Complete breakdown of input parameters and their impact
+- **Market Insights**: Industry benchmarks and percentile analysis
+- **Recommendations**: Actionable suggestions based on the analysis
+- **Visual Charts**: Professional visualizations of salary trends and comparisons
 
-### 🎨 Interactive Dashboard
-- **Responsive Design**: Works on desktop, tablet, mobile
-- **Real-time Visualizations**: Chart.js powered analytics
-- **Smooth Animations**: Premium UI/UX experience
-- **Dark Mode Support** (Coming Soon)
-
-### 🗄️ SQLite Storage
-- **Persistent Database**: All predictions stored locally
-- **CRUD Operations**: Full history management
-- **Scalable Architecture**: Ready for production scale
+### 🎨 Responsive User Interface
+- **Full Responsiveness**: Optimized for desktop, tablet, and mobile devices
+- **Interactive Visualizations**: Chart.js powered graphs for salary analysis
+- **3D Animations**: Three.js powered interactive globe on prediction page
+- **Smooth Interactions**: Loading animations and progress indicators
+- **Professional Design**: Clean, modern interface with gradient effects
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **HTML5 / CSS3 / JavaScript** — Modern web standards
-- **Three.js** — 3D animated globe visualization
-- **Chart.js** — Professional data visualizations
-- **jsPDF / html2pdf** — Client-side PDF generation
-- **Responsive Design** — Mobile-first approach
+- **HTML5 / CSS3 / JavaScript** — Semantic markup and modern styling
+- **Three.js** — 3D animated visualizations
+- **Chart.js** — Professional interactive charts
+- **jsPDF** — Client-side PDF report generation
+- **Responsive Design** — Mobile-first architecture
 
 ### Backend
-- **Flask 2.3** — Lightweight Python web framework
-- **Python 3.11** — Latest Python runtime
-- **Gunicorn** — Production WSGI server
+- **Flask 2.3.3** — Lightweight Python web framework
+- **Python 3.11** — Modern Python runtime
+- **Gunicorn 21.2** — Production WSGI application server
 
 ### Machine Learning
-- **Scikit-Learn 1.3** — Core ML algorithms
-- **Pandas 2.0** — Data manipulation
-- **NumPy 1.24** — Numerical computing
-- **Joblib** — Model persistence
+- **Scikit-Learn 1.3.0** — Ridge regression model and preprocessing
+- **Pandas 2.0.3** — Data manipulation and feature engineering
+- **NumPy 1.24.3** — Numerical computations
+- **Joblib 1.3.1** — Model and preprocessor serialization
 
 ### Database
-- **SQLite3** — Embedded relational database
-- **JSON** — Configuration and stats storage
+- **SQLite 3** — Lightweight embedded database for prediction history
+- **JSON** — Configuration and statistics storage
 
 ### Deployment
-- **Heroku/PaaS Ready** — Procfile included
-- **Docker Support** (Coming Soon)
-- **AWS/Azure Compatible**
+- **Gunicorn** — Production-ready WSGI server
+- **Heroku/Render Ready** — Procfile for platform deployment
 
 ---
 
@@ -199,7 +190,7 @@ salary-ai-platform/
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/salary-ai-platform.git
+git clone https://github.com/paliwalpriyanjal-hash/salary-ai-platform.git
 cd salary-ai-platform
 ```
 
@@ -280,40 +271,46 @@ GET /api/salary-stats
 ## 🤖 Machine Learning Pipeline
 
 ### Dataset
-- **Size**: 50,000+ salary records
+- **Size**: 250,000 salary records
 - **Coverage**: Multiple industries and job roles
-- **Time Period**: 2020-2024
-- **Features**: 20+ professional attributes
+- **Training Data**: 200,000 records (80%)
+- **Test Data**: 50,000 records (20%)
+- **Features**: 42 engineered professional attributes
+- **Time Period**: Historical salary data
 
 ### Preprocessing
-1. **Data Cleaning**: Handle missing values, outliers
-2. **Categorical Encoding**: Label encoding for categories
+1. **Data Cleaning**: Handle missing values, outliers, data validation
+2. **Categorical Encoding**: OneHotEncoder for categorical features
 3. **Feature Scaling**: StandardScaler for numerical features
-4. **Train-Test Split**: 80-20 stratified split
+4. **Train-Test Split**: 80-20 stratified split for model validation
 
 ### Feature Engineering
-- Job title embedding
-- Experience polynomial features
-- Interaction terms (Industry × Company Size)
-- Location encoding
-- Education level mapping
+- **Job Title Features**: Categorical encoding with 42 total features
+- **Experience Handling**: Years of experience as continuous variable
+- **Education Mapping**: Categorical education level encoding
+- **Skills & Certifications**: Count-based encoding
+- **Industry Categorization**: Categorical encoding by industry
+- **Company Size Factoring**: Categorical encoding (Small, Medium, Enterprise)
+- **Location Encoding**: Categorical encoding by location
+- **Remote Work Status**: Binary categorical encoding
 
 ### Model Training
-- **Algorithm**: Random Forest / XGBoost
-- **Hyperparameter Tuning**: GridSearchCV
-- **Cross-Validation**: 5-fold CV
-- **Best Model Selection**: Highest R² score
+- **Algorithm**: Ridge Regression with L2 regularization
+- **Training Set**: 200,000 records (80%)
+- **Test Set**: 50,000 records (20%)
+- **Features**: 42 engineered features
+- **Preprocessing**: OneHotEncoder + StandardScaler pipeline
 
-### Model Evaluation
-- **R² Score**: 0.96 (96% variance explained)
-- **RMSE**: ₹1,250 (within range)
-- **MAE**: ₹950 (average error)
-- **Cross-Validation Score**: 0.94
+### Model Performance
+- **R² Score**: 0.9635 (96.35% variance explained)
+- **RMSE**: $7,124.67
+- **MAE**: $5,434.43 (average absolute error)
+- **Test Performance**: Validated on 50,000 hold-out records
 
-### Explainability
-- **Feature Importance**: Built-in model feature importances
-- **SHAP Values** (Coming): Advanced model interpretation
-- **Partial Dependence Plots** (Coming): Feature relationships
+### Model Insights
+- **Feature Importance**: Ridge regression coefficient analysis showing feature impact
+- **Grouped Contributions**: Aggregated feature influence by category (Job Title, Experience, Education, etc.)
+- **Prediction Confidence**: Model confidence scoring for each prediction
 
 ---
 
@@ -368,66 +365,79 @@ GET /api/salary-stats
 
 ## 🌐 Deployment
 
+### Local Development
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python app.py
+```
+
+The app will start at `http://localhost:5000`
+
 ### Heroku Deployment
 
 1. **Install Heroku CLI**
    ```bash
    # Windows
    choco install heroku-cli
+   # Or download from heroku.com
    ```
 
-2. **Create Heroku App**
+2. **Deploy**
    ```bash
-   heroku create salary-ai-platform
-   ```
-
-3. **Deploy**
-   ```bash
+   heroku create your-app-name
    git push heroku main
    ```
 
-4. **View Logs**
+3. **View Logs**
    ```bash
    heroku logs --tail
    ```
 
-### Environment Variables
-Create `.env` file for local development:
-```env
-FLASK_ENV=production
-FLASK_DEBUG=0
-```
+### Render.com Deployment
 
-### Production Checklist
-- [ ] `requirements.txt` updated with all dependencies
-- [ ] `Procfile` configured correctly
-- [ ] `runtime.txt` specifies Python version
-- [ ] No debug mode in production
-- [ ] Database migrations completed
-- [ ] Static files collected
-- [ ] Gunicorn configured for concurrency
+1. Connect GitHub repository
+2. Set build command: `pip install -r requirements.txt`
+3. Set start command: `gunicorn app:app`
+4. Deploy
+
+### Production Configuration
+- Set `FLASK_ENV=production`
+- Set `FLASK_DEBUG=0`
+- Configure `SECRET_KEY` environment variable
+- SQLite database persists locally
+- Static files served via web server
 
 ---
 
 ## 🔮 Future Improvements
 
-### Phase 2 (Q3 2024)
-- [ ] **Dark Mode** — UI theme switching
-- [ ] **SHAP Explainability** — Advanced model interpretation
-- [ ] **Salary Negotiation Tips** — AI-generated negotiation strategies
-- [ ] **Job Market Trends** — Interactive trend analysis
+Potential enhancements for future versions:
 
-### Phase 3 (Q4 2024)
-- [ ] **Docker Support** — Containerized deployment
-- [ ] **REST API** — Full RESTful API for integrations
-- [ ] **Authentication** — User accounts and saved profiles
-- [ ] **Email Reports** — Automated report delivery
+### Model Improvements
+- [ ] **Ensemble Models** — Combine Ridge with other algorithms (Random Forest, XGBoost)
+- [ ] **SHAP Explainability** — Advanced feature interaction analysis
+- [ ] **Model Versioning** — Support multiple model versions
+- [ ] **Real-time Data Updates** — Update with latest salary information
 
-### Phase 4 (2025)
-- [ ] **Mobile App** — Native iOS/Android applications
-- [ ] **Real-time Data** — Live salary data feeds
-- [ ] **Premium Features** — Subscription tiers
-- [ ] **AI Coach** — Personalized career guidance chatbot
+### Features
+- [ ] **User Authentication** — Create accounts and save profiles
+- [ ] **Salary Negotiation Tips** — AI-generated negotiation guidance
+- [ ] **Comparison Tool** — Compare multiple salary scenarios
+- [ ] **Email Notifications** — Send reports via email
+
+### Technical
+- [ ] **REST API** — Public API for third-party integrations
+- [ ] **Docker Containerization** — Simplified deployment
+- [ ] **Job Market Analytics** — Trend analysis and market insights
+- [ ] **Mobile Application** — Native iOS/Android apps
+
+### Data
+- [ ] **More Geographies** — Expand beyond current locations
+- [ ] **Real-time Benchmarking** — Access to current market salaries
+- [ ] **Industry-specific Models** — Specialized models per industry
 
 ---
 
@@ -478,10 +488,10 @@ With the condition:
 
 ## 👤 Author
 
-**Your Name**
-- 🐙 GitHub: [@yourusername](https://github.com/yourusername)
-- 💼 LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- 📧 Email: your.email@example.com
+**Priyanjal Paliwal**
+- 🐙 GitHub: [@paliwalpriyanjal-hash](https://github.com/paliwalpriyanjal-hash)
+- 📧 Email: priyanjal.paliwal@example.com
+- 💼 LinkedIn: [Your LinkedIn Profile](#)
 
 ---
 
@@ -503,15 +513,15 @@ For issues, questions, or suggestions:
 
 ---
 
-## 🎉 Quick Links
+## � Next Steps
 
-- [Live Demo](#) — Try the platform
-- [Documentation](docs/) — Full developer docs
-- [API Reference](docs/api.md) — API documentation
-- [Architecture](docs/architecture.md) — System design
+1. **Try It Locally** — Follow the Installation section to run the app
+2. **Make a Prediction** — Test with your own professional profile
+3. **Explore Features** — Check out the history and model details
+4. **Read the Docs** — See [GITHUB_PUSH_GUIDE.md](GITHUB_PUSH_GUIDE.md) for deployment
 
 ---
 
-**Star ⭐ this repository if you found it helpful!**
+**Questions or Feedback?** Open an [issue](https://github.com/paliwalpriyanjal-hash/salary-ai-platform/issues) on GitHub.
 
-Built with ❤️ using Flask, Python, and Machine Learning
+Built with Python, Flask, and Machine Learning | MIT License
