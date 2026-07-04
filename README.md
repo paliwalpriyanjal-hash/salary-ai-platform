@@ -490,8 +490,8 @@ With the condition:
 
 **Priyanjal Paliwal**
 - 🐙 GitHub: [@paliwalpriyanjal-hash](https://github.com/paliwalpriyanjal-hash)
-- 📧 Email: priyanjal.paliwal@example.com
-- 💼 LinkedIn: [Your LinkedIn Profile](#)
+- 📧 Email: paliwalpriyanjal876@gmail.com
+- 💼 LinkedIn: [[Your LinkedIn Profile](https://www.linkedin.com/in/priyanjal-paliwal-806534331/)](#)
 
 ---
 
@@ -509,7 +509,7 @@ With the condition:
 For issues, questions, or suggestions:
 - 🐛 [GitHub Issues](https://github.com/yourusername/salary-ai-platform/issues)
 - 💬 [Discussions](https://github.com/yourusername/salary-ai-platform/discussions)
-- 📧 Email: your.email@example.com
+- 📧 Email: paliwalpriyanjal876@gmail.com
 
 ---
 
