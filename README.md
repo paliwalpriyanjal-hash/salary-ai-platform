@@ -422,12 +422,30 @@ Configure these variables under the service's **Variables** tab:
    heroku logs --tail
    ```
 
-### Render.com Deployment
+### Render.com Deployment (Recommended Blueprint)
 
-1. Connect GitHub repository
-2. Set build command: `pip install -r requirements.txt`
-3. Set start command: `gunicorn app:app`
-4. Deploy
+This project includes a `render.yaml` Blueprint specification file to automatically deploy and configure all resources.
+
+#### Option A: One-Click Deploy (Blueprint)
+1. Log in to [Render](https://render.com/).
+2. Click **New** -> **Blueprint**.
+3. Connect your GitHub repository.
+4. Render will automatically configure the Web Service, mount a persistent disk at `/data`, set `PYTHON_VERSION=3.13.5`, generate a secure random `SECRET_KEY`, and set up auto-deployments.
+
+#### Option B: Manual Service Setup
+1. Click **New** -> **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the following fields:
+   - **Runtime**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+4. Under the **Variables** tab, add:
+   - `PYTHON_VERSION`: `3.13.5`
+   - `DATABASE_PATH`: `/data/history.db`
+5. Under the **Disks** section, add a disk:
+   - **Name**: `history-db`
+   - **Mount Path**: `/data`
+   - **Size**: `1 GiB`
 
 ### Production Configuration
 - Set `FLASK_ENV=production`
