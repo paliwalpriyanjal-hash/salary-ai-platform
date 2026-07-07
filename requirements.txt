@@ -7,6 +7,4 @@ scikit-learn==1.6.1
 
 joblib==1.5.3
 
-gunicorn==22.0.0
-
 python-dotenv==1.0.1

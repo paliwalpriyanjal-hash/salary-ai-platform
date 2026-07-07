@@ -1,27 +1,59 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from datetime import datetime
+"""
+app.py – Flask entry point for the AI Salary Intelligence Platform.
+
+PythonAnywhere WSGI note
+────────────────────────
+PythonAnywhere's WSGI server imports this module directly and uses the
+`app` object.  The `if __name__ == "__main__"` block is only executed
+during local development and is ignored on PythonAnywhere.
+"""
+
+import logging
+import os
+import json
 import time
 import uuid
-import json
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-from src.predict import PredictPipeline
-from src.predict import CustomData
-from src.database import save_prediction, get_all_predictions, get_prediction_by_id, delete_prediction
-
+from datetime import datetime
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+# Load .env file when present (local dev only; PythonAnywhere uses env vars)
+load_dotenv()
+
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+
+from src.predict import PredictPipeline, CustomData
+from src.database import save_prediction, get_all_predictions, get_prediction_by_id, delete_prediction
+
+# ──────────────────────────────────────────────────────────────────
+# Paths
+# ──────────────────────────────────────────────────────────────────
+
 BASE_DIR = Path(__file__).resolve().parent
+
+# ──────────────────────────────────────────────────────────────────
+# Logging
+# ──────────────────────────────────────────────────────────────────
+
+logger = logging.getLogger(__name__)
+
+# ──────────────────────────────────────────────────────────────────
+# Flask application
+# ──────────────────────────────────────────────────────────────────
 
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / "templates"),
-    static_folder=str(BASE_DIR / "static")
+    static_folder=str(BASE_DIR / "static"),
 )
+
+# Secret key – always set this as an environment variable in production
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+
+# ──────────────────────────────────────────────────────────────────
+# Template filters
+# ──────────────────────────────────────────────────────────────────
 
 @app.template_filter("format_number")
 def format_number(value):
@@ -30,87 +62,83 @@ def format_number(value):
     except Exception:
         return value
 
-# ======================================
-# Load Pre-computed Stats at Startup
-# ======================================
 
-SUMMARY_STATS = {}
-MODEL_METRICS  = {}
+# ──────────────────────────────────────────────────────────────────
+# Load pre-computed stats at startup
+# ──────────────────────────────────────────────────────────────────
 
-def _load_json(path):
+SUMMARY_STATS: dict = {}
+MODEL_METRICS: dict = {}
+
+
+def _load_json(path: Path) -> dict:
     try:
         with open(path, "r") as f:
             return json.load(f)
-    except Exception:
+    except Exception as exc:
+        logger.warning("Could not load %s: %s", path, exc)
         return {}
 
+
 SUMMARY_STATS = _load_json(BASE_DIR / "artifacts" / "summary_stats.json")
-MODEL_METRICS  = _load_json(BASE_DIR / "artifacts" / "model_metrics.json")
+MODEL_METRICS = _load_json(BASE_DIR / "artifacts" / "model_metrics.json")
 
 
-def compute_salary_stats(prediction, job_title, industry):
-    """Return industry_avg, salary_diff, percentile and low/mid/high markers."""
-    stats = {}
+# ──────────────────────────────────────────────────────────────────
+# Helper: salary market stats
+# ──────────────────────────────────────────────────────────────────
 
-    # Industry+Job average
+def compute_salary_stats(prediction: float, job_title: str, industry: str) -> dict:
+    """Return industry_avg, salary_diff, percentile, and low/mid/high markers."""
+    stats: dict = {}
+
     key = f"{industry}||{job_title}"
     ind_job_avg = SUMMARY_STATS.get("ind_job_avg", {}).get(key)
-    job_avg     = SUMMARY_STATS.get("job_avg", {}).get(job_title)
-    global_avg  = SUMMARY_STATS.get("global_average")
+    job_avg = SUMMARY_STATS.get("job_avg", {}).get(job_title)
+    global_avg = SUMMARY_STATS.get("global_average")
 
-    # Pick best available average
     industry_avg = ind_job_avg or job_avg or global_avg
     if industry_avg:
-        stats["industry_avg"]  = round(industry_avg, 2)
-        stats["salary_diff"]   = round(prediction - industry_avg, 2)
+        stats["industry_avg"] = round(industry_avg, 2)
+        stats["salary_diff"] = round(prediction - industry_avg, 2)
         stats["salary_diff_pct"] = round(((prediction - industry_avg) / industry_avg) * 100, 1)
     else:
-        stats["industry_avg"]  = None
-        stats["salary_diff"]   = None
+        stats["industry_avg"] = None
+        stats["salary_diff"] = None
         stats["salary_diff_pct"] = None
 
-    # Percentile
     job_bins = SUMMARY_STATS.get("job_percentiles", {}).get(job_title)
     if job_bins:
-        # bins[i] = value at i+1th percentile
         pct = 1
         for i, val in enumerate(job_bins):
             if prediction >= val:
                 pct = i + 1
         stats["percentile"] = min(pct, 99)
-        stats["salary_low"]  = round(job_bins[9], 2)    # 10th percentile
-        stats["salary_mid"]  = round(job_bins[49], 2)   # 50th percentile
-        stats["salary_high"] = round(job_bins[89], 2)   # 90th percentile
+        stats["salary_low"] = round(job_bins[9], 2)   # 10th percentile
+        stats["salary_mid"] = round(job_bins[49], 2)  # 50th percentile
+        stats["salary_high"] = round(job_bins[89], 2) # 90th percentile
     else:
-        stats["percentile"]  = None
-        stats["salary_low"]  = None
-        stats["salary_mid"]  = None
+        stats["percentile"] = None
+        stats["salary_low"] = None
+        stats["salary_mid"] = None
         stats["salary_high"] = None
 
     return stats
 
 
-# ======================================
-# Home Page
-# ======================================
+# ──────────────────────────────────────────────────────────────────
+# Routes
+# ──────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# ======================================
-# About AI Model Page
-# ======================================
-
 @app.route("/about")
 def about():
     return render_template("about.html", metrics=MODEL_METRICS)
 
-
-# ======================================
-# Prediction Route
-# ======================================
 
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
@@ -118,7 +146,6 @@ def predict():
         return render_template("predict.html")
 
     try:
-        # Collect form inputs
         job_title        = request.form.get("job_title", "").strip()
         experience_years = request.form.get("experience_years", "0").strip()
         education_level  = request.form.get("education_level", "").strip()
@@ -129,7 +156,7 @@ def predict():
         remote_work      = request.form.get("remote_work", "").strip()
         certifications   = request.form.get("certifications", "0").strip()
 
-        # --- Input validation ---
+        # Input validation
         errors = []
         if not job_title:
             errors.append("Job Title is required.")
@@ -159,12 +186,10 @@ def predict():
                 error_details=errors
             )
 
-        # Type-cast
         experience_years = float(experience_years)
         skills_count     = int(skills_count)
         certifications   = int(certifications)
 
-        # Build dataframe
         data = CustomData(
             job_title=job_title,
             experience_years=experience_years,
@@ -178,7 +203,6 @@ def predict():
         )
         df = data.get_data_as_dataframe()
 
-        # Run prediction
         start = time.time()
         pipeline = PredictPipeline()
         predictions, explainability = pipeline.predict(df)
@@ -187,14 +211,10 @@ def predict():
         prediction_val = round(float(predictions[0]), 2)
         confidence     = explainability.get("confidence", 85.0)
 
-        # Salary market stats
-        salary_stats = compute_salary_stats(prediction_val, job_title, industry)
-
-        # Identifiers
+        salary_stats    = compute_salary_stats(prediction_val, job_title, industry)
         prediction_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         report_id       = str(uuid.uuid4())[:8].upper()
 
-        # Build input dict for DB
         input_dict = {
             "job_title": job_title,
             "experience_years": experience_years,
@@ -207,7 +227,6 @@ def predict():
             "certifications": certifications
         }
 
-        # Save to DB
         save_prediction(
             report_id=report_id,
             dataset_name="User Input",
@@ -222,6 +241,8 @@ def predict():
             recommendation="Generated based on model insights.",
             explainability_data_dict=explainability
         )
+
+        logger.info("Prediction %s completed: %.2f (confidence %.1f%%)", report_id, prediction_val, confidence)
 
         return render_template(
             "result.html",
@@ -244,9 +265,9 @@ def predict():
             model_metrics=json.dumps(MODEL_METRICS)
         )
 
-    except Exception as e:
+    except Exception as exc:
         import traceback
-        traceback.print_exc()
+        logger.error("Prediction failed: %s\n%s", exc, traceback.format_exc())
         return render_template(
             "error.html",
             error_type="prediction_failed",
@@ -256,9 +277,9 @@ def predict():
         ), 500
 
 
-# ======================================
-# History Routes
-# ======================================
+# ──────────────────────────────────────────────────────────────────
+# History routes
+# ──────────────────────────────────────────────────────────────────
 
 @app.route("/history")
 def history():
@@ -324,23 +345,25 @@ def history_delete(report_id):
     return redirect(url_for("history"))
 
 
-# ======================================
-# API: Salary Stats (for JS lookups)
-# ======================================
+# ──────────────────────────────────────────────────────────────────
+# API
+# ──────────────────────────────────────────────────────────────────
 
 @app.route("/api/salary-stats")
 def api_salary_stats():
-    job_title = request.args.get("job", "")
-    industry  = request.args.get("industry", "")
+    job_title  = request.args.get("job", "")
+    industry   = request.args.get("industry", "")
     prediction = float(request.args.get("pred", 0))
     stats = compute_salary_stats(prediction, job_title, industry)
     return jsonify(stats)
 
 
-# ======================================
-# Run Flask
-# ======================================
+# ──────────────────────────────────────────────────────────────────
+# Local development runner (NOT used by PythonAnywhere)
+# ──────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
+    # debug=False in production; use FLASK_DEBUG env var to enable locally
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host="0.0.0.0", port=port, debug=debug, use_reloader=False)
