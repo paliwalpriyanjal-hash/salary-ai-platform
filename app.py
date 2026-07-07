@@ -4,6 +4,10 @@ import time
 import uuid
 import json
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from src.predict import PredictPipeline
 from src.predict import CustomData
@@ -338,4 +342,5 @@ def api_salary_stats():
 # ======================================
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)

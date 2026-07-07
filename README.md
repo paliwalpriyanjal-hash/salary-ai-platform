@@ -376,6 +376,32 @@ python app.py
 
 The app will start at `http://localhost:5000`
 
+### Railway Deployment (Recommended)
+
+This project is fully optimized for **Railway** deployment out-of-the-box. It includes a `Procfile` and `runtime.txt` to enable automatic detection, building, and running.
+
+#### 1. Quick Start
+1. Create a new project on [Railway](https://railway.app/).
+2. Select **Deploy from GitHub repo** and connect this repository.
+3. Railway will automatically detect the Python environment, install dependencies, and start the app using the command in the `Procfile`.
+
+#### 2. SQLite Database Persistence (Important)
+Since Railway containers use an ephemeral filesystem, your SQLite database (`history.db`) will be reset on every restart or redeployment. To ensure data persistence:
+1. In your Railway service settings, go to the **Volumes** tab.
+2. Click **Add Volume** to create a persistent disk (e.g. mount path: `/data`).
+3. Under the **Variables** tab, add a new environment variable:
+   - **Key**: `DATABASE_PATH`
+   - **Value**: `/data/history.db`
+4. Deploy the application. The system will automatically create the parent `/data` directory and persist prediction logs permanently.
+
+#### 3. Environment Variables
+Configure these variables under the service's **Variables** tab:
+- `PORT`: Automatically assigned by Railway.
+- `DATABASE_PATH`: `/data/history.db` (for SQLite persistence).
+- `SECRET_KEY`: A long, secure random string (for security).
+
+---
+
 ### Heroku Deployment
 
 1. **Install Heroku CLI**
@@ -407,8 +433,7 @@ The app will start at `http://localhost:5000`
 - Set `FLASK_ENV=production`
 - Set `FLASK_DEBUG=0`
 - Configure `SECRET_KEY` environment variable
-- SQLite database persists locally
-- Static files served via web server
+- SQLite database path is customizable via `DATABASE_PATH` (defaulting to the project root `history.db` if unset).
 
 ---
 

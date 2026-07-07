@@ -16,9 +16,10 @@ class PredictPipeline:
             
             # Load saved files (be resilient if artifacts are missing)
             import os
-            model_path = os.path.join("artifacts", "best_salary_model.pkl")
-            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
-            scaler_path = os.path.join("artifacts", "scaler.pkl")
+            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            model_path = os.path.join(root_dir, "artifacts", "best_salary_model.pkl")
+            preprocessor_path = os.path.join(root_dir, "artifacts", "preprocessor.pkl")
+            scaler_path = os.path.join(root_dir, "artifacts", "scaler.pkl")
 
             model = None
             preprocessor = None
@@ -32,7 +33,7 @@ class PredictPipeline:
                 # If artifacts are missing, fall back to a safe default prediction
                 try:
                     import json
-                    with open("artifacts/summary_stats.json", "r") as fh:
+                    with open(os.path.join(root_dir, "artifacts", "summary_stats.json"), "r") as fh:
                         stats = json.load(fh)
                         global_avg = stats.get("global_average")
                         if global_avg is None:

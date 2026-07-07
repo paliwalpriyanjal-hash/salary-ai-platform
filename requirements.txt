@@ -10,6 +10,3 @@ joblib==1.5.3
 gunicorn==22.0.0
 
 python-dotenv==1.0.1
-
-matplotlib==3.9.4
-seaborn==0.13.2
